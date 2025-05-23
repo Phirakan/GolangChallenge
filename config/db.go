@@ -1,38 +1,43 @@
 package config
 
 import (
-  "context"
+	"context"
+	"log"
+	"time"
 
-  "go.mongodb.org/mongo-driver/v2/mongo"
-  "go.mongodb.org/mongo-driver/v2/mongo/options"
-  "go.mongodb.org/mongo-driver/v2/mongo/readpref"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
-func main() {
-  // Use the SetServerAPIOptions() method to set the version of the Stable API on the client
-  serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-  opts := options.Client().ApplyURI("mongodb+srv://mosuuuutech:mosuuuutech@cluster0.pjni7b1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").SetServerAPIOptions(serverAPI)
+var DB *mongo.Database
 
-  // Create a new client and connect to the server
-  client, err := mongo.Connect(opts)
-  if err != nil {
-    panic(err)
-  }
+func ConnectDB() (*mongo.Client, error) {
 
-  defer func() {
-    if err = client.Disconnect(context.TODO()); err != nil {
-      panic(err)
-    }
-  }()
+	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+	opts := options.Client().ApplyURI("mongodb+srv://mosuuuutech:mosuuuutech@cluster0.pjni7b1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").SetServerAPIOptions(serverAPI)
 
-  // Send a ping to confirm a successful connection
-  if err := client.Ping(context.TODO(), readpref.Primary()); err != nil {
-    panic(err)
-  }
- createTables()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
+	client, err := mongo.Connect(opts)
+	if err != nil {
+		return nil, err
+	}
+
+  // Check the connection
+	if err := client.Ping(ctx, readpref.Primary()); err != nil {
+		return nil, err
+	}
+
+	log.Println("Connected to MongoDB!")
+
+	// Set database
+	DB = client.Database("golang_challenge")
+
+	return client, nil
 }
 
-func createTables() {
-	panic("unimplemented")
+func GetDB() *mongo.Database {
+	return DB
 }
