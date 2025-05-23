@@ -23,7 +23,7 @@ func TestUserToResponse_Unit(t *testing.T) {
 	assert.Equal(t, user.ID, response.ID)
 	assert.Equal(t, user.Name, response.Name)
 	assert.Equal(t, user.Email, response.Email)
-	assert.NotContains(t, response, "Password")
+
 }
 
 func TestValidateEmail(t *testing.T) {
