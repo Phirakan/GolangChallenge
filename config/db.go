@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -14,8 +15,14 @@ var DB *mongo.Database
 
 func ConnectDB() (*mongo.Client, error) {
 
+	mongoURL := os.Getenv("MONGODB_URL")
+	if mongoURL == "" {
+	
+		mongoURL = "mongodb+srv://mosuuuutech:mosuuuutech@cluster0.pjni7b1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+	}
+
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
-	opts := options.Client().ApplyURI("mongodb+srv://mosuuuutech:mosuuuutech@cluster0.pjni7b1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0").SetServerAPIOptions(serverAPI)
+	opts := options.Client().ApplyURI(mongoURL).SetServerAPIOptions(serverAPI)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -25,7 +32,7 @@ func ConnectDB() (*mongo.Client, error) {
 		return nil, err
 	}
 
-  // Check the connection
+	// Check the connection
 	if err := client.Ping(ctx, readpref.Primary()); err != nil {
 		return nil, err
 	}
