@@ -2,14 +2,22 @@ package utils
 
 import (
 	"errors"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
+func getJWTSecret() []byte {
+	secret := os.Getenv("JWT_SECRET")
+	if secret == "" {
+		
+		secret = "secret_key_develop" 
+	}
+	return []byte(secret)
+}
 
-var jwtSecret = []byte("่jwt-secret-key")
-
+var jwtSecret = getJWTSecret()
 
 type JWTClaim struct {
 	UserID string `json:"user_id"` 
