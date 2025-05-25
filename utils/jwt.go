@@ -32,8 +32,8 @@ func GenerateJWT(userID string, email string) (string, error) {
 		UserID: userID,
 		Email:  email,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expirationTime.Unix(),
 			IssuedAt:  time.Now().Unix(),
+			ExpiresAt: expirationTime.Unix(),
 		},
 	}
 	
